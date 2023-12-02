@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.media.SoundPool;
 import android.view.MotionEvent;
 import java.util.Random;
 
@@ -35,14 +36,17 @@ class Snake {
     // Start by heading to the right
     private Heading heading = Heading.RIGHT;
 
-    // A bitmap for each direction the head can face
-    private Bitmap mBitmapHeadRight;
-    private Bitmap mBitmapHeadLeft;
-    private Bitmap mBitmapHeadUp;
-    private Bitmap mBitmapHeadDown;
+    // for implementing strategy pattern for the audio
+    // allows Snake to use DeathSound and EatSound
+    // makes it so that sound is loaded dynamically instead of it being required for the program to function
+    public int playSnakeSound(int soundID, SoundPool mSP){
+        PlaySound ps = new PlaySound();
+        return ps.playSound(soundID, mSP);
+    }
 
-    // A bitmap for the body
-    private Bitmap mBitmapBody;
+    // FOR COMPOSITE PATTERN OF SNAKE
+    private SnakeHead snakeHead;
+    private SnakeBody snakeBody;
 
 
     Snake(Context context, Point mr, int ss) {
@@ -55,59 +59,40 @@ class Snake {
         mSegmentSize = ss;
         mMoveRange = mr;
 
+        snakeHead = new SnakeHead();
+        snakeBody = new SnakeBody();
+
         // Create and scale the bitmaps
-        mBitmapHeadRight = BitmapFactory
-                .decodeResource(context.getResources(),
-                        R.drawable.head);
+        snakeHead.SetmBitmapHeadRight(BitmapFactory.decodeResource(context.getResources(), R.drawable.head));
 
         // Create 3 more versions of the head for different headings
-        mBitmapHeadLeft = BitmapFactory
-                .decodeResource(context.getResources(),
-                        R.drawable.head);
-
-        mBitmapHeadUp = BitmapFactory
-                .decodeResource(context.getResources(),
-                        R.drawable.head);
-
-        mBitmapHeadDown = BitmapFactory
-                .decodeResource(context.getResources(),
-                        R.drawable.head);
+        snakeHead.SetmBitmapHeadLeft(BitmapFactory.decodeResource(context.getResources(), R.drawable.head));
+        snakeHead.SetmBitmapHeadUp(BitmapFactory.decodeResource(context.getResources(), R.drawable.head));
+        snakeHead.SetmBitmapHeadDown(BitmapFactory.decodeResource(context.getResources(), R.drawable.head));
 
         // Modify the bitmaps to face the snake head
         // in the correct direction
-        mBitmapHeadRight = Bitmap
-                .createScaledBitmap(mBitmapHeadRight,
-                        ss, ss, false);
+        snakeHead.SetmBitmapHeadRight(Bitmap.createScaledBitmap(snakeHead.GetmBitmapHeadRight(), ss, ss, false));
+
 
         // A matrix for scaling
         Matrix matrix = new Matrix();
         matrix.preScale(-1, 1);
 
-        mBitmapHeadLeft = Bitmap
-                .createBitmap(mBitmapHeadRight,
-                        0, 0, ss, ss, matrix, true);
+        snakeHead.SetmBitmapHeadLeft(Bitmap.createBitmap(snakeHead.GetmBitmapHeadRight(), 0, 0, ss, ss, matrix, true));
 
         // A matrix for rotating
         matrix.preRotate(-90);
-        mBitmapHeadUp = Bitmap
-                .createBitmap(mBitmapHeadRight,
-                        0, 0, ss, ss, matrix, true);
+        snakeHead.SetmBitmapHeadUp(Bitmap.createBitmap(snakeHead.GetmBitmapHeadRight(), 0, 0, ss, ss, matrix, true));
 
         // Matrix operations are cumulative
         // so rotate by 180 to face down
         matrix.preRotate(180);
-        mBitmapHeadDown = Bitmap
-                .createBitmap(mBitmapHeadRight,
-                        0, 0, ss, ss, matrix, true);
+        snakeHead.SetmBitmapHeadDown(Bitmap.createBitmap(snakeHead.GetmBitmapHeadRight(), 0, 0, ss, ss, matrix, true));
 
         // Create and scale the body
-        mBitmapBody = BitmapFactory
-                .decodeResource(context.getResources(),
-                        R.drawable.body);
-
-        mBitmapBody = Bitmap
-                .createScaledBitmap(mBitmapBody,
-                        ss, ss, false);
+        snakeBody.SetmBitmapBody(BitmapFactory.decodeResource(context.getResources(), R.drawable.body));
+        snakeBody.SetmBitmapBody(Bitmap.createScaledBitmap(snakeBody.GetmBitmapBody(), ss, ss, false));
 
         // The halfway point across the screen in pixels
         // Used to detect which side of screen was pressed
@@ -257,7 +242,7 @@ class Snake {
             // Draw the head
             switch (heading) {
                 case RIGHT:
-                    canvas.drawBitmap(mBitmapHeadRight,
+                    canvas.drawBitmap(snakeHead.GetmBitmapHeadRight(),
                             segmentLocations.get(0).x
                                     * mSegmentSize,
                             segmentLocations.get(0).y
@@ -265,7 +250,7 @@ class Snake {
                     break;
 
                 case LEFT:
-                    canvas.drawBitmap(mBitmapHeadLeft,
+                    canvas.drawBitmap(snakeHead.GetmBitmapHeadLeft(),
                             segmentLocations.get(0).x
                                     * mSegmentSize,
                             segmentLocations.get(0).y
@@ -273,7 +258,7 @@ class Snake {
                     break;
 
                 case UP:
-                    canvas.drawBitmap(mBitmapHeadUp,
+                    canvas.drawBitmap(snakeHead.GetmBitmapHeadUp(),
                             segmentLocations.get(0).x
                                     * mSegmentSize,
                             segmentLocations.get(0).y
@@ -281,7 +266,7 @@ class Snake {
                     break;
 
                 case DOWN:
-                    canvas.drawBitmap(mBitmapHeadDown,
+                    canvas.drawBitmap(snakeHead.GetmBitmapHeadDown(),
                             segmentLocations.get(0).x
                                     * mSegmentSize,
                             segmentLocations.get(0).y
@@ -291,7 +276,7 @@ class Snake {
 
             // Draw the snake body one block at a time
             for (int i = 1; i < segmentLocations.size(); i++) {
-                canvas.drawBitmap(mBitmapBody,
+                canvas.drawBitmap(snakeBody.GetmBitmapBody(),
                         segmentLocations.get(i).x
                                 * mSegmentSize,
                         segmentLocations.get(i).y

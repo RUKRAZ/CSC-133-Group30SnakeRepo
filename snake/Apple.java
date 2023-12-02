@@ -40,19 +40,16 @@ class Apple {
         location.x = -10;
         location2.x = -10;
         location3.x = -10;
-        //location4.x = -10;
 
         // Load the image to the bitmap
         mBitmapApple = BitmapFactory.decodeResource(context.getResources(), R.drawable.apple);
         mBitmapPurpleApple = BitmapFactory.decodeResource(context.getResources(), R.drawable.purple);
         mBitmapGreenApple = BitmapFactory.decodeResource(context.getResources(), R.drawable.green);
-        //mBitmapGoldenApple = BitmapFactory.decodeResource(context.getResources(), R.drawable.gold);
 
         // Resize the bitmap
         mBitmapApple = Bitmap.createScaledBitmap(mBitmapApple, s, s, false);
         mBitmapPurpleApple = Bitmap.createScaledBitmap(mBitmapPurpleApple, s, s, false);
         mBitmapGreenApple = Bitmap.createScaledBitmap(mBitmapGreenApple, s, s, false);
-        //mBitmapGoldenApple = Bitmap.createScaledBitmap(mBitmapGoldenApple, s, s, false);
     }
 
     public void spawn(){

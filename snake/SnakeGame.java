@@ -38,6 +38,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     // How many points does the player have
     private int mScore;
+    private int mHighScore = 0;
 
     // Objects for drawing
     private Canvas mCanvas;
@@ -49,6 +50,7 @@ class SnakeGame extends SurfaceView implements Runnable{
     // And an apple
     private Apple mApple;
     private GoldenApple gApple;
+    private Bomb mBomb1, mBomb2, mBomb3, mBomb4, mBomb5, mBomb6, mBomb7, mBomb8, mBomb9, mBomb10, mBomb11, mBomb12, mBomb13, mBomb14, mBomb15 ;
     Singleton singleton;
 
 
@@ -101,9 +103,83 @@ class SnakeGame extends SurfaceView implements Runnable{
                         mNumBlocksHigh),
                 blockSize);
         gApple = new GoldenApple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
-        //singleton = Singleton.getInstance(gApple);
 
         mSnake = new Snake(context,
+                new Point(NUM_BLOCKS_WIDE,
+                        mNumBlocksHigh),
+                blockSize);
+
+        mBomb1 = new Bomb(context,
+                new Point(NUM_BLOCKS_WIDE,
+                        mNumBlocksHigh),
+                blockSize);
+
+        mBomb2 = new Bomb(context,
+                new Point(NUM_BLOCKS_WIDE,
+                        mNumBlocksHigh),
+                blockSize);
+
+        mBomb3 = new Bomb(context,
+                new Point(NUM_BLOCKS_WIDE,
+                        mNumBlocksHigh),
+                blockSize);
+
+        mBomb4 = new Bomb(context,
+                new Point(NUM_BLOCKS_WIDE,
+                        mNumBlocksHigh),
+                blockSize);
+
+        mBomb5 = new Bomb (context,
+                new Point(NUM_BLOCKS_WIDE,
+                        mNumBlocksHigh),
+                blockSize);
+
+        mBomb6 = new Bomb(context,
+                new Point(NUM_BLOCKS_WIDE,
+                        mNumBlocksHigh),
+                blockSize);
+
+        mBomb7 = new Bomb(context,
+                new Point(NUM_BLOCKS_WIDE,
+                        mNumBlocksHigh),
+                blockSize);
+
+        mBomb8 = new Bomb(context,
+                new Point(NUM_BLOCKS_WIDE,
+                        mNumBlocksHigh),
+                blockSize);
+
+        mBomb9 = new Bomb(context,
+                new Point(NUM_BLOCKS_WIDE,
+                        mNumBlocksHigh),
+                blockSize);
+
+        mBomb10 = new Bomb (context,
+                new Point(NUM_BLOCKS_WIDE,
+                        mNumBlocksHigh),
+                blockSize);
+
+        mBomb11 = new Bomb(context,
+                new Point(NUM_BLOCKS_WIDE,
+                        mNumBlocksHigh),
+                blockSize);
+
+        mBomb12 = new Bomb(context,
+                new Point(NUM_BLOCKS_WIDE,
+                        mNumBlocksHigh),
+                blockSize);
+
+        mBomb13 = new Bomb(context,
+                new Point(NUM_BLOCKS_WIDE,
+                        mNumBlocksHigh),
+                blockSize);
+
+        mBomb14 = new Bomb(context,
+                new Point(NUM_BLOCKS_WIDE,
+                        mNumBlocksHigh),
+                blockSize);
+
+        mBomb15 = new Bomb (context,
                 new Point(NUM_BLOCKS_WIDE,
                         mNumBlocksHigh),
                 blockSize);
@@ -120,11 +196,34 @@ class SnakeGame extends SurfaceView implements Runnable{
         // Get the apple ready for dinner
         // spawn the other apples too
         mApple.spawn();
-        gApple.goldSpawn();
+        if(singleton == null){
+            gApple.goldSpawn();
+        }
+
+        mBomb1.bombSpawn();
+        mBomb2.bombSpawn();
+        mBomb3.bombSpawn();
+        mBomb4.bombSpawn();
+        mBomb5.bombSpawn();
+        mBomb6.bombSpawn();
+        mBomb7.bombSpawn();
+        mBomb8.bombSpawn();
+        mBomb9.bombSpawn();
+        mBomb10.bombSpawn();
+        mBomb11.bombSpawn();
+        mBomb12.bombSpawn();
+        mBomb13.bombSpawn();
+        mBomb14.bombSpawn();
+        mBomb15.bombSpawn();
 
         // Reset the mScore
         mScore = 0;
 
+        // Setup mNextFrameTime so an update can triggered
+        mNextFrameTime = System.currentTimeMillis();
+    }
+
+    public void newGameFromPaused(){
         // Setup mNextFrameTime so an update can triggered
         mNextFrameTime = System.currentTimeMillis();
     }
@@ -169,7 +268,6 @@ class SnakeGame extends SurfaceView implements Runnable{
         return false;
     }
 
-
     // Update all the game objects
     // Update this so that it will also check and do the needed functions when a green, a purple,
     // and a golden apple are eaten
@@ -188,41 +286,84 @@ class SnakeGame extends SurfaceView implements Runnable{
             // the score will be updated in each eat method in each apple class
             // Add to  mScore
             mScore = mScore + 1;
+            if(mScore >= mHighScore){
+                mHighScore = mScore;
+            }
 
             // Play a sound
-            mSP.play(mEat_ID, 1, 1, 0, 0, 1);
+            mSnake.playSnakeSound(mEat_ID, mSP);
         }
         if(mSnake.checkDinner(mApple.getLocation3())){
             mApple.spawn();
-            mScore = mScore + random.nextInt(100);
+            int r = random.nextInt(100);
+            mScore = mScore + r;
+            if(mScore >= mHighScore){
+                mHighScore = mScore;
+            }
             mSnake.move2();
-            mSP.play(mEat_ID, 1, 1, 0, 0, 1);
+            mSnake.playSnakeSound(mEat_ID, mSP);
         }
         if(mSnake.checkDinner(mApple.getLocation2())){
             mApple.spawn();
-            mScore = 0;
+            mScore = mScore - random.nextInt(50);
             mSnake.reset2();
-            mSP.play(mEat_ID, 1, 1, 0, 0, 1);
+            if (mScore < 0) {
+                newGame();
+            }
+            mSnake.playSnakeSound(mEat_ID, mSP);
         }
-        if(mSnake.checkDinner(gApple.getGoldLocation())){
-            //singleton.gSpawn();
-            singleton = Singleton.getInstance(gApple);
-            singleton.gSpawn();
-            mScore = mScore + 1000;
-            mSP.play(mEat_ID, 1, 1, 0, 0, 1);
+        if(singleton == null){
+            if(mSnake.checkDinner(gApple.getGoldLocation())){
+                singleton = Singleton.getInstance(gApple);
+                singleton.gSpawn();
+                mScore = mScore + 1000;
+                if(mScore >= mHighScore){
+                    mHighScore = mScore;
+                }
+                mSnake.playSnakeSound(mEat_ID, mSP);
+            }
         }
 
+        if(mSnake.checkDinner(mBomb1.getBombLocation()) || mSnake.checkDinner(mBomb2.getBombLocation())
+                || mSnake.checkDinner(mBomb3.getBombLocation()) || mSnake.checkDinner(mBomb4.getBombLocation())
+                || mSnake.checkDinner(mBomb5.getBombLocation()) || mSnake.checkDinner(mBomb6.getBombLocation())
+                || mSnake.checkDinner(mBomb7.getBombLocation()) || mSnake.checkDinner(mBomb8.getBombLocation())
+                || mSnake.checkDinner(mBomb9.getBombLocation()) || mSnake.checkDinner(mBomb10.getBombLocation())
+                || mSnake.checkDinner(mBomb11.getBombLocation()) || mSnake.checkDinner(mBomb12.getBombLocation())
+                || mSnake.checkDinner(mBomb14.getBombLocation()) || mSnake.checkDinner(mBomb15.getBombLocation())) {
+            mBomb1.bombSpawn();
+            mBomb2.bombSpawn();
+            mBomb3.bombSpawn();
+            mBomb4.bombSpawn();
+            mBomb5.bombSpawn();
+            mBomb6.bombSpawn();
+            mBomb7.bombSpawn();
+            mBomb8.bombSpawn();
+            mBomb9.bombSpawn();
+            mBomb10.bombSpawn();
+            mBomb11.bombSpawn();
+            mBomb12.bombSpawn();
+            mBomb13.bombSpawn();
+            mBomb14.bombSpawn();
+            mBomb15.bombSpawn();
+
+            mScore = mScore - 30;
+
+            if (mScore < 0) {
+                newGame();
+            }
+            mSnake.playSnakeSound(mEat_ID, mSP);
+        }
 
         // Did the snake die?
         if (mSnake.detectDeath()) {
             // Pause the game ready to start again
-            mSP.play(mCrashID, 1, 1, 0, 0, 1);
+            mSnake.playSnakeSound(mCrashID, mSP);
 
             mPaused =true;
         }
 
     }
-
 
     // Do all the drawing
     public void draw() {
@@ -239,6 +380,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
             // Draw the score
             mCanvas.drawText("" + mScore, 20, 120, mPaint);
+            mCanvas.drawText("High Score:" + mHighScore, 1100, 120, mPaint);
 
             // Draw the apple and the snake
             // update this to also draw the green, purple, and golden apple
@@ -246,6 +388,21 @@ class SnakeGame extends SurfaceView implements Runnable{
             if(singleton == null){
                 gApple.goldDraw(mCanvas, mPaint);
             }
+            mBomb1.bombDraw(mCanvas, mPaint);
+            mBomb2.bombDraw(mCanvas, mPaint);
+            mBomb3.bombDraw(mCanvas, mPaint);
+            mBomb4.bombDraw(mCanvas, mPaint);
+            mBomb5.bombDraw(mCanvas, mPaint);
+            mBomb6.bombDraw(mCanvas, mPaint);
+            mBomb7.bombDraw(mCanvas, mPaint);
+            mBomb8.bombDraw(mCanvas, mPaint);
+            mBomb9.bombDraw(mCanvas, mPaint);
+            mBomb10.bombDraw(mCanvas, mPaint);
+            mBomb11.bombDraw(mCanvas, mPaint);
+            mBomb12.bombDraw(mCanvas, mPaint);
+            mBomb13.bombDraw(mCanvas, mPaint);
+            mBomb14.bombDraw(mCanvas, mPaint);
+            mBomb15.bombDraw(mCanvas, mPaint);
             mSnake.draw(mCanvas, mPaint);
 
             // Draw some text while paused
@@ -259,7 +416,16 @@ class SnakeGame extends SurfaceView implements Runnable{
                 // We will give this an international upgrade soon
                 //mCanvas.drawText("Tap To Play!", 200, 700, mPaint);
                 mCanvas.drawText("Tap To Play!",
-                        200, 700, mPaint);
+                        400, 500, mPaint);
+                mPaint.setTextSize(80);
+                mCanvas.drawText("If you pressed 'Pause'", 700, 625, mPaint);
+                mCanvas.drawText("Press resume to continue your current game", 300, 700, mPaint);
+                mPaint.setTextSize(120);
+                mCanvas.drawText("Resume", 20, 250, mPaint);
+            }
+            if(mPaused == false){
+                // Draw "Pause" text
+                mCanvas.drawText("Pause", 400, 120, mPaint);
             }
 
 
@@ -268,16 +434,31 @@ class SnakeGame extends SurfaceView implements Runnable{
         }
     }
 
+    //fix the pause button error
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
         switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_UP:
-                if (mPaused) {
-                    mPaused = false;
-                    newGame();
+                if(motionEvent.getX() >= 20 && motionEvent.getX() <= 370) {
+                    if(motionEvent.getY() <= 250){
+                        mPaused = false;
+                        newGameFromPaused();
+                        return true;
+                    }
+                }
+                if(motionEvent.getX() >= 400 && motionEvent.getX() <= 750){
+                    if(motionEvent.getY() <=120){
+                        mPaused = true;
+                        return true;
+                    }
+                } else {
+                    if (mPaused) {
+                        mPaused = false;
+                        newGame();
 
-                    // Don't want to process snake direction for this tap
-                    return true;
+                        // Don't want to process snake direction for this tap
+                        return true;
+                    }
                 }
 
                 // Let the Snake class handle the input

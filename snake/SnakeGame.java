@@ -224,8 +224,12 @@ class SnakeGame extends SurfaceView implements Runnable{
     }
 
     public void newGameFromPaused(){
-        // Setup mNextFrameTime so an update can triggered
-        mNextFrameTime = System.currentTimeMillis();
+        if(mScore <=0 || mSnake.detectDeath()){
+            newGame();
+        } else {
+            // Setup mNextFrameTime so an update can triggered
+            mNextFrameTime = System.currentTimeMillis();
+        }
     }
 
 
@@ -236,7 +240,10 @@ class SnakeGame extends SurfaceView implements Runnable{
             if(!mPaused) {
                 // Update 10 times a second
                 if (updateRequired()) {
-                    update();
+                    updateApples();
+                    updateGoldenApple();
+                    updateBombs();
+                    updateSnake();
                 }
             }
             draw();
@@ -271,10 +278,8 @@ class SnakeGame extends SurfaceView implements Runnable{
     // Update all the game objects
     // Update this so that it will also check and do the needed functions when a green, a purple,
     // and a golden apple are eaten
-    public void update() {
+    public void updateApples(){
         Random random = new Random();
-
-
         // Move the snake
         mSnake.move();
         // Did the head of the snake eat the apple?
@@ -308,10 +313,13 @@ class SnakeGame extends SurfaceView implements Runnable{
             mScore = mScore - random.nextInt(50);
             mSnake.reset2();
             if (mScore < 0) {
-                newGame();
+                mPaused = true;
             }
             mSnake.playSnakeSound(mEat_ID, mSP);
         }
+    }
+
+    public void updateGoldenApple(){
         if(singleton == null){
             if(mSnake.checkDinner(gApple.getGoldLocation())){
                 singleton = Singleton.getInstance(gApple);
@@ -323,7 +331,9 @@ class SnakeGame extends SurfaceView implements Runnable{
                 mSnake.playSnakeSound(mEat_ID, mSP);
             }
         }
+    }
 
+    public void updateBombs(){
         if(mSnake.checkDinner(mBomb1.getBombLocation()) || mSnake.checkDinner(mBomb2.getBombLocation())
                 || mSnake.checkDinner(mBomb3.getBombLocation()) || mSnake.checkDinner(mBomb4.getBombLocation())
                 || mSnake.checkDinner(mBomb5.getBombLocation()) || mSnake.checkDinner(mBomb6.getBombLocation())
@@ -350,19 +360,19 @@ class SnakeGame extends SurfaceView implements Runnable{
             mScore = mScore - 30;
 
             if (mScore < 0) {
-                newGame();
+                mPaused = true;
             }
             mSnake.playSnakeSound(mEat_ID, mSP);
         }
+    }
 
-        // Did the snake die?
+    public void updateSnake(){
         if (mSnake.detectDeath()) {
             // Pause the game ready to start again
             mSnake.playSnakeSound(mCrashID, mSP);
 
             mPaused =true;
         }
-
     }
 
     // Do all the drawing
@@ -471,8 +481,7 @@ class SnakeGame extends SurfaceView implements Runnable{
         }
         return true;
     }
-
-
+    
     // Stop the thread
     public void pause() {
         mPlaying = false;
@@ -482,7 +491,6 @@ class SnakeGame extends SurfaceView implements Runnable{
             // Error
         }
     }
-
 
     // Start the thread
     public void resume() {

@@ -112,6 +112,7 @@ class Snake {
         segmentLocations.add(new Point(w / 2, h / 2));
     }
 
+    // This function is used to set the snake in a random location when it eats a purple apple
     void reset2(){
         Random random = new Random();
         segmentLocations.get(0).x = random.nextInt(mMoveRange.x) + 1;
@@ -155,6 +156,7 @@ class Snake {
 
     }
 
+    // This function is used to give the snake a speed boost after it eats a green apple
     void move2() {
         // Move the body
         // Start at the back and move it

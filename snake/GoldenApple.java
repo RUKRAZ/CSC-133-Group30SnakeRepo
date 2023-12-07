@@ -9,34 +9,39 @@ import android.graphics.Point;
 import java.util.Random;
 
 public class GoldenApple {
-    // The location of the apple on the grid
+    // The location of the  gold apple on the grid
     // Not in pixels
     private Point goldLocation = new Point();
     // The range of values we can choose from
-    // to spawn an apple
+    // to spawn a gold apple
     private Point mSpawnRange;
     private int mSize;
     private Bitmap mBitmapGoldenApple;
     GoldenApple(Context context, Point sr, int s){
         // Make a note of the passed in spawn range
         mSpawnRange = sr;
-        // Make a note of the size of an apple
+        // Make a note of the size of the gold apple
         mSize = s;
-        // Hide the apple off-screen until the game starts
+        // Hide the gold apple off-screen until the game starts
         goldLocation.x = -10;
         mBitmapGoldenApple = BitmapFactory.decodeResource(context.getResources(), R.drawable.gold);
         mBitmapGoldenApple = Bitmap.createScaledBitmap(mBitmapGoldenApple, s, s, false);
     }
 
     public void goldSpawn() {
-        // Choose two random values and place the apple
+        // Choose two random values and place the gold apple
         Random random = new Random();
         goldLocation.x = random.nextInt(mSpawnRange.x) + 1;
         goldLocation.y = random.nextInt(mSpawnRange.y - 1) + 1;
     }
+
+    // Let SnakeGame know where the gold apple is
+    // SnakeGame can share this with the snake
     public Point getGoldLocation(){
         return goldLocation;
     }
+
+    // Draw the gold apple
     public void goldDraw(Canvas canvas, Paint paint){
         canvas.drawBitmap(mBitmapGoldenApple, goldLocation.x * mSize, goldLocation.y * mSize, paint);
     }

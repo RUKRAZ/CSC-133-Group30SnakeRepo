@@ -10,23 +10,21 @@ import java.util.Random;
 
 class Apple {
 
-    // The location of the apple on the grid
+    // The location of the apples on the grid
     // Not in pixels
     private Point location = new Point();
     private Point location2 = new Point();
     private Point location3 = new Point();
-    //private Point location4 = new Point();
 
     // The range of values we can choose from
-    // to spawn an apple
+    // to spawn the apples
     private Point mSpawnRange;
     private int mSize;
 
-    // An image to represent the apple
+    // Images to represent the apples
     private Bitmap mBitmapApple;
     private Bitmap mBitmapPurpleApple;
     private Bitmap mBitmapGreenApple;
-    //private Bitmap mBitmapGoldenApple;
 
 
     /// Set up the apple in the constructor
@@ -36,7 +34,7 @@ class Apple {
         mSpawnRange = sr;
         // Make a note of the size of an apple
         mSize = s;
-        // Hide the apple off-screen until the game starts
+        // Hide the apples off-screen until the game starts
         location.x = -10;
         location2.x = -10;
         location3.x = -10;
@@ -52,8 +50,9 @@ class Apple {
         mBitmapGreenApple = Bitmap.createScaledBitmap(mBitmapGreenApple, s, s, false);
     }
 
+    // This called everytime an apple is eaten
     public void spawn(){
-        // Choose two random values and place the apple
+        // Choose two random values and place the apples
         Random random = new Random();
         location.x = random.nextInt(mSpawnRange.x) + 1;
         location.y = random.nextInt(mSpawnRange.y - 1) + 1;
@@ -64,7 +63,7 @@ class Apple {
 
     }
 
-    // Let SnakeGame know where the apple is
+    // Let SnakeGame know where the apples are
     // SnakeGame can share this with the snake
     public Point getLocation(){
         return location;
@@ -78,8 +77,7 @@ class Apple {
         return location3;
     }
 
-    // Draw the apple
-    // update this method to get it to draw the other apples
+    // Draw the apples
     public void draw(Canvas canvas, Paint paint){
         canvas.drawBitmap(mBitmapApple,
                 location.x * mSize, location.y * mSize, paint);
